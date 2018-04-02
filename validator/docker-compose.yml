@@ -1,0 +1,15 @@
+# Not to be used for dev, but for testing
+
+version: "3.4"
+services:
+  app:
+    build: ./
+    volumes:
+      - $HOME/.ssh:/ssh:ro
+    environment:
+      TARGET_GIT_URL: ssh://git@git.dev.irwin.tech:7999/public-projects/test.git
+      TARGET_BRANCH: master
+      SOURCE_GIT_URL: ssh://git@git.dev.irwin.tech:7999/mikesir87/test.git
+      SOURCE_BRANCH: master
+      SOURCE_COMMIT_ID: 672f47990c0cae86107635ef6dfdd8d13e7e08ff
+      SSH_KEY_FILE: /ssh/id_rsa
