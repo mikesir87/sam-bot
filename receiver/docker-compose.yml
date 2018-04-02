@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  app:
+    image: node:9.10
+    command: bash -c "npm install && npm run dev"
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 3000:3000
+    environment:
+      GITLAB_BASE_URL: https://git.dev.irwin.tech/api/v3
+      GITLAB_SECRET_TOKEN_KEY: irwin-token
+      SSH_KEY_VOLUME_SOURCE: /Users/mikesir87/.ssh
+      SSH_KEY_VOLUME_DESTINATION: /ssh-key
+      SSH_KEY_FILE_PATH: /ssh-key/id_rsa
+    secrets:
+      - irwin-token
+secrets:
+  irwin-token:
+    file: $HOME/gitlab-token.txt
