@@ -19,5 +19,5 @@ services:
     secrets:
       - gitlab-token
 secrets:
-  irwin-token:
+  gitlab-token:
     file: $HOME/gitlab-token.txt
