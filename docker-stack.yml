@@ -1,0 +1,28 @@
+# This is meant to only serve as a sample, as you will most likely need to change some values
+
+version: "3.4"
+
+services:
+  app:
+    image: mikesir87/sam-bot-receiver
+    volumes:
+      # Need Docker socket to launch the validator containers
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      labels:
+        # This is obviously if you're using Traefik. Adjust as needed
+        traefik.backend: sam-bot-receiver
+        traefik.port: "3000"
+        traefik.frontend.rule: Host:sam-bot-receiver.example.com
+    environment:
+      GITLAB_BASE_URL: https://gitlab.com/api/v3
+      GITLAB_SECRET_TOKEN_KEY: gitlab-token
+      SSH_KEY_VOLUME_SOURCE: $HOME/.ssh
+      SSH_KEY_VOLUME_DESTINATION: /ssh-key
+      SSH_KEY_FILE_PATH: /ssh-key/id_rsa
+    secrets:
+      - gitlab-token
+
+secrets:
+  gitlab-token:
+    file: $HOME/gitlab-token.txt

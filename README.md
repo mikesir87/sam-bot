@@ -106,3 +106,7 @@ The validator **requires** the following environment variables to be set when st
 
 - The SSH key here obviously needs to have access to the repos. It probably should only have read access to the repos (deploy key).
  
+ ## Example Stack File
+ 
+ A sample Docker Stack file is provided as a base to work from ([docker-stack.yml](./docker-stack.yml)). It shouldn't be used directly, as you'll need to adjust where various properties are found (like secrets, volume mounts, etc.).
+ 
