@@ -84,11 +84,11 @@ The receiver **requires** the following environment variables to be set when sta
 | GITLAB_SECRET_TOKEN_KEY        | Name of the secret file (in `/run/secrets`) that contains the GitLab secret key                          | 
 | SSH_KEY_VOLUME_SOURCE          | When starting the validator, the source "side" of the volume mount of the SSH key                        |
 | SSH_KEY_VOLUME_DESTINATION     | When starting the validator, the destination "side" of the volume mount of the SSH key                   |
-| SSH_KEY_FILE_PATH              | Full filepath of the SSH key, to be used in the validator                                                |
+| SSH_KEY_FILE_PATH              | Full filepath of the SSH key, to be used in the validator to clone repos                                 |
 | VERIFY_IMAGE_NAME _(optional)_ | Image name to be used for the validator (to allow use of your own). Default: mikesir87/sam-bot-validator |
 
 - The receiver also **requires** the Docker socket to be mounted, as it needs to be able to launch containers to perform validation.
-- Finally, a Swarm secret that contains a GitLab access token. The name of the secret is provided to the app using the env variable `$GITLAB_SECRET_TOKEN_KEY` 
+- Finally, a Swarm secret that contains a GitLab access token. This access token MUST have write access to the stack repos, as it will (hopefully) auto-merge requests. The name of the secret is provided to the app using the env variable `$GITLAB_SECRET_TOKEN_KEY` 
 
 
 ### Validator
@@ -104,3 +104,5 @@ The validator **requires** the following environment variables to be set when st
 | **SOURCE_COMMIT_ID** | commit hash that should be used on the source branch |
 | **SSH_KEY_FILE**     | file path of an SSH key to be used for repo cloning  |
 
+- The SSH key here obviously needs to have access to the repos. It probably should only have read access to the repos (deploy key).
+ 
