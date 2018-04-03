@@ -6,6 +6,10 @@
 
 SAM's intent is to be configured as a webhook receiver for repos that contain stack files. SAM will validate the changes, and if valid, auto-merge the request.
 
+**Introductory Slidedeck**
+
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRjpAfv2sMmVIyQ6cXPTEGr5btSWBDYqdOKw8sdku-N1VLbYllUIX8w4VRhMJ-fqIv1Qw5jgvaMX1tP/embed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
 ## Quick FAQ
 
 ### Why SAM?
