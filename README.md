@@ -87,6 +87,9 @@ The receiver **requires** the following environment variables to be set when sta
 | SSH_KEY_FILE_PATH              | Full filepath of the SSH key, to be used in the validator                                                |
 | VERIFY_IMAGE_NAME _(optional)_ | Image name to be used for the validator (to allow use of your own). Default: mikesir87/sam-bot-validator |
 
+- The receiver also **requires** the Docker socket to be mounted, as it needs to be able to launch containers to perform validation.
+- Finally, a Swarm secret that contains a GitLab access token. The name of the secret is provided to the app using the env variable `$GITLAB_SECRET_TOKEN_KEY` 
+
 
 ### Validator
 
