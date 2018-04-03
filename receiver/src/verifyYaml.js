@@ -38,11 +38,13 @@ export async function verifyYaml(sourceRepoUrl, sourceBranch, sourceCommitId,
     }
   };
 
+  // Actually start up the container and let it run
   return dockerClient.run(verifyImageName, null, [memStreamStdIn, memStreamStdErr], createOptions)
       .then((container) => {
         memStreamStdIn.destroy();
         memStreamStdErr.destroy();
 
+        // If container exited with non-zero status, throw an error
         if (container.output.StatusCode !== 0)
           throw new Error(outputErr);
       });

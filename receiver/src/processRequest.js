@@ -2,6 +2,7 @@ import {gitlabProcessor} from "./gitlabProcessor";
 import {ErrorMessage} from "./errorMessage";
 import {verifyYaml} from "./verifyYaml";
 
+// As other processors are implemented, add them here
 const DEFAULT_PROCESSORS = [
     gitlabProcessor,
 ];
@@ -19,7 +20,7 @@ export async function processRequest(headers, request, processors = DEFAULT_PROC
     return processor.postComment(e.message, request);
   }
 
-  // Start container for actual validation
+  // Start container for actual validation. If validation fails, its Promise is rejected (thrown).
   try {
     await verifyYaml(details.sourceRepoUrl, details.sourceBranch, details.sourceCommitId, details.targetRepoUrl, details.targetBranch);
   } catch (e) {

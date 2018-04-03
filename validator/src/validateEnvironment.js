@@ -1,6 +1,11 @@
 import * as fs from "fs";
 import isGitUrl from "is-git-url";
 
+/**
+ * Verify that all expected environment variables were passed. Further ensures that
+ * values are valid (valid Git URLs, SSH key is found, etc.)
+ * @returns {Promise<any>} Resolved upon completion. Rejected upon error (with message).
+ */
 export function validateEnvironment() {
   return new Promise((accept, reject) => {
     const missingProperties = ["TARGET_GIT_URL", "TARGET_BRANCH", "SOURCE_GIT_URL", "SOURCE_BRANCH", "SOURCE_COMMIT_ID", "SSH_KEY_FILE"]

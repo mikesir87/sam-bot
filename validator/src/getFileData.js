@@ -1,5 +1,11 @@
 import * as fs from "fs";
 
+/**
+ * Get the file contents for all provided file paths
+ * @param paths The list of files to fetch content for
+ * @returns {Promise<Promise<*>[]>} Promise whose resolved value is an array of file contents
+ * in the same order as requested
+ */
 export async function getFileData(...paths) {
   return Promise.all(
       paths.map((path) => readFile(path))

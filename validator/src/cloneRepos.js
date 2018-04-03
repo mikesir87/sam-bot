@@ -1,13 +1,7 @@
 import { exec } from "child_process";
 
-export async function cloneRepos(sourceLocation,
-                                 sourceGitUrl,
-                                 sourceBranch,
-                                 sourceSshKeyFile,
-                                 targetLocation,
-                                 targetGirlUrl,
-                                 targetBranch,
-                                 targetSshKeyFile) {
+export async function cloneRepos(sourceLocation, sourceGitUrl, sourceBranch, sourceSshKeyFile,
+                                 targetLocation, targetGirlUrl, targetBranch, targetSshKeyFile) {
   return Promise.all([
     (repoCloner(sourceLocation, sourceGitUrl, sourceBranch, sourceSshKeyFile)),
     (repoCloner(targetLocation, targetGirlUrl, targetBranch, targetSshKeyFile)),
