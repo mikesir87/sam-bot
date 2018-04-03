@@ -24,7 +24,9 @@ export async function validateDifferences(sourceJson, targetJson) {
     if (diff === undefined) // Indicates no change was made
       return reject("No change detected on the stack file");
 
+    // Flatten the YAML structure to { "path.to.change" : [old value, new value] }
     const flattendDiff = flattenObj(diff);
+
     const invalidKeys = Object.keys(flattendDiff)
         .filter((changedKey) => {
           for (let i = 0; i < VALID_YAML_FILE_CHANGES_REGEX.length; i++) {

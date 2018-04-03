@@ -9,7 +9,7 @@ run()
     .catch((e) => exitAsError(e));
 
 async function run() {
-  validateEnvironment();
+  await validateEnvironment();
 
   await cloneRepos(
       "source", process.env.SOURCE_GIT_URL, process.env.SOURCE_BRANCH, process.env.SSH_KEY_FILE,
