@@ -8,7 +8,7 @@ SAM's intent is to be configured as a webhook receiver for repos that contain st
 
 **Introductory Slidedeck**
 
-<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRjpAfv2sMmVIyQ6cXPTEGr5btSWBDYqdOKw8sdku-N1VLbYllUIX8w4VRhMJ-fqIv1Qw5jgvaMX1tP/embed?start=false&loop=false&delayms=3000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+The prototype for SAM was developed back in Dec 2017 and presented to the Container-as-a-Service team at Virginia Tech. [The slidedeck can be found here](https://docs.google.com/presentation/d/1sNME92RGk1ruqJ87LSHCkKrKu8cUrA5k0-HCStEJyNI/edit?usp=sharing)
 
 ## Quick FAQ
 
