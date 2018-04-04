@@ -6,7 +6,7 @@ import {processRequest} from "./processRequest";
 const app = express();
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => res.json({ message : "Hi there" }));
+app.get("/", (req, res) => res.json({ message : "SAM says, 'Hi there!'" }));
 
 app.post("/", async (req, res) => {
   try {
