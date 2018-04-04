@@ -14,6 +14,7 @@ const gitlabClient = new GitlabClient(
  */
 function supports(headers, body) {
   return headers["x-gitlab-token"] !== undefined &&
+      headers["x-gitlab-token"] === secrets[process.env.GITLAB_WEBHOOK_SECRET_TOKEN_KEY] &&
       body.object_kind === "merge_request" &&
       body.object_attributes !== undefined;
 }
