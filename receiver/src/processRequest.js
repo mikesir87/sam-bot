@@ -30,7 +30,7 @@ export async function processRequest(headers, request, processors = DEFAULT_PROC
   // Now merge!
   try {
     await processor.mergeRequest(request);
-    await processor.postComment(`Auto-merged due to verification success`);
+    await processor.postComment(`Auto-merged due to verification success`, request);
   } catch (e) {
     return processor.postComment(`Verification succeeded, but an error occurred during attempt to auto-merge: ${e.message}`, request);
   }
