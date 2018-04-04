@@ -29,9 +29,7 @@ export async function verifyYaml(sourceRepoUrl, sourceBranch, sourceCommitId,
 
   const createOptions = {
     Env: environment,
-    Volumes: {
-      [volumeSource] : {}
-    },
+    Volumes: { },
     HostConfig : {
       AutoRemove : true,
       Binds : [`${volumeSource}:${volumeDestination}`]
