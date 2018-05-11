@@ -21,7 +21,7 @@ const flattenObj = (obj, keys=[]) => {
 
 const VALID_YAML_FILE_CHANGES_REGEX = [
     /services.[a-z0-9-]+.image/,
-    /services.[a-z0-9-]+.deploy.labels.(?!traefik)[a-z0-9-\\.]+/,
+    /services.[a-z0-9-]+.deploy.labels.(?!(traefik|com))[a-z0-9-\\.]+/,
 ];
 
 /**
