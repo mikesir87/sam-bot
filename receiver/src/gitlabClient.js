@@ -12,7 +12,7 @@ export class GitlabClient {
   async postComment(projectId, mergeRequestId, comment) {
     return fetch(`${this.baseUrl}/projects/${projectId}/merge_requests/${mergeRequestId}/notes`, {
           method : "POST",
-          body : JSON.stringify({ body : `[BOT] - ${comment}` }),
+          body : JSON.stringify({ body : comment }),
           headers : {
             "Private-Token" : this.secretToken,
             "Content-Type" : "application/json"
