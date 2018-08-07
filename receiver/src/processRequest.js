@@ -1,10 +1,10 @@
-import {gitlabProcessor} from "./gitlabProcessor";
+import {GitLabProcessor} from "./processors/gitlabProcessor";
 import {ErrorMessage} from "./errorMessage";
 import {verifyYaml} from "./verifyYaml";
 
 // As other processors are implemented, add them here
 const DEFAULT_PROCESSORS = [
-    gitlabProcessor,
+    new GitLabProcessor(),
 ];
 
 export async function processRequest(headers, request, processors = DEFAULT_PROCESSORS) {

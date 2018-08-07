@@ -1,8 +1,9 @@
 FROM node:9.10 as build
 WORKDIR /app
-COPY package.json .
+COPY package* ./
 RUN npm install
 COPY .babelrc .
+COPY test ./test
 COPY src ./src
 RUN npm run build
 
