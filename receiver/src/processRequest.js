@@ -7,7 +7,10 @@ const DEFAULT_PROCESSORS = [
     new GitLabProcessor(),
 ];
 
-export async function processRequest(headers, request, processors = DEFAULT_PROCESSORS) {
+export async function processRequest(headers,
+                                     request,
+                                     processors = DEFAULT_PROCESSORS,
+                                     yamlVerificationFn = verifyYaml) {
   const processor = processors.find((p) => p.supports(headers, request));
   if (processor === undefined)
     throw new ErrorMessage(500, "No processor found for incoming request");
@@ -22,7 +25,7 @@ export async function processRequest(headers, request, processors = DEFAULT_PROC
 
   // Start container for actual validation. If validation fails, its Promise is rejected (thrown).
   try {
-    await verifyYaml(details.sourceRepoUrl, details.sourceBranch, details.sourceCommitId, details.targetRepoUrl, details.targetBranch);
+    await yamlVerificationFn(details.sourceRepoUrl, details.sourceBranch, details.sourceCommitId, details.targetRepoUrl, details.targetBranch);
   } catch (e) {
     return processor.postComment(e.message, request);
   }
