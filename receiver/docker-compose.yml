@@ -11,13 +11,17 @@ services:
     ports:
       - 3000:3000
     environment:
-      GITLAB_BASE_URL: https://gitlab.com/api/v3
+      GITLAB_BASE_URL: https://gitlab.com/api/v4
+      GITLAB_WEBHOOK_SECRET_TOKEN_KEY: gitlab-webhook-secret
       GITLAB_SECRET_TOKEN_KEY: gitlab-token
       SSH_KEY_VOLUME_SOURCE: $HOME/.ssh
       SSH_KEY_VOLUME_DESTINATION: /ssh-key
       SSH_KEY_FILE_PATH: /ssh-key/id_rsa
     secrets:
       - gitlab-token
+      - gitlab-webhook-secret-token-key
 secrets:
   gitlab-token:
-    file: $HOME/gitlab-token.txt
+    file: ./gitlab-token.txt
+  gitlab-webhook-secret:
+    file: ./gitlab-webhook-secret.txt

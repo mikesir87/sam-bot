@@ -69,3 +69,5 @@ dist
 
 jest_0
 
+gitlab-token.txt
+gitlab-webhook-secret.txt

@@ -37,7 +37,8 @@ export async function verifyYaml(sourceRepoUrl, sourceBranch, sourceCommitId,
   };
 
   // Actually start up the container and let it run
-  return dockerClient.run(verifyImageName, null, [memStreamStdIn, memStreamStdErr], createOptions)
+  return dockerClient.pull(verifyImageName)
+      .then(() => dockerClient.run(verifyImageName, null, [memStreamStdIn, memStreamStdErr], createOptions))
       .then((container) => {
         memStreamStdIn.destroy();
         memStreamStdErr.destroy();
