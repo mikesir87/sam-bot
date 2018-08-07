@@ -37,15 +37,15 @@ export class GitLabProcessor {
    */
   async validate(headers, body) {
     if (body.object_attributes.state !== 'opened')
-      throw `Status not opened - ` + body.object_attributes.state;
+      throw new Error(`Status not opened - ` + body.object_attributes.state);
     if (body.object_attributes.target_branch !== "master")
-      throw `Can't auto-merge as MR not targeting master branch`;
+      throw new Error(`Can't auto-merge as MR not targeting master branch`);
 
     const projectId = body.object_attributes.target_project_id;
     const mergeRequestId = body.object_attributes.id;
     const changes = await this.gitlabClient.getChanges(projectId, mergeRequestId);
     if (changes.changes.filter((c) => c.old_path !== "docker-stack.yml").length > 0)
-      throw `Changes to other file(s) detected. Only changes to \`docker-stack.yml\` supported for auto-merge`;
+      throw new Error(`Changes to other file(s) detected. Only changes to \`docker-stack.yml\` supported for auto-merge`);
 
     return {
       targetRepoUrl: body.object_attributes.target.ssh_url,

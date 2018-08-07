@@ -70,7 +70,7 @@ describe("GitLab processor", () => {
         await processor.validate({}, body);
         fail("Should have thrown");
       } catch (err) {
-        expect(err).toEqual("Status not opened - closed");
+        expect(err.message).toEqual("Status not opened - closed");
       }
     });
 
@@ -80,7 +80,7 @@ describe("GitLab processor", () => {
         await processor.validate({}, body);
         fail("Should have thrown");
       } catch (err) {
-        expect(err).toEqual("Can't auto-merge as MR not targeting master branch");
+        expect(err.message).toEqual("Can't auto-merge as MR not targeting master branch");
       }
     });
 
@@ -91,7 +91,7 @@ describe("GitLab processor", () => {
         await processor.validate({}, body);
         fail("Should have thrown");
       } catch (err) {
-        expect(err).toContain("Changes to other file(s) detected");
+        expect(err.message).toContain("Changes to other file(s) detected");
       }
     });
 
