@@ -1,0 +1,52 @@
+version: "3.4"
+
+services:
+  receiver:
+    image: node:9.10
+    command: bash -c "npm install && npm run dev"
+    working_dir: /app
+    volumes:
+      - ./receiver:/app
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 3000:3000
+    environment:
+      GITLAB_BASE_URL: http://gitlab/api/v4
+      GITLAB_WEBHOOK_SECRET_TOKEN_KEY: gitlab-webhook-verification-token
+      GITLAB_SECRET_TOKEN_KEY: gitlab-api-access-token
+      SSH_KEY_VOLUME_SOURCE: ssh-key-volume
+      SSH_KEY_VOLUME_DESTINATION: /ssh-key
+      SSH_KEY_FILE_PATH: /ssh-key/id_rsa
+    secrets:
+      - gitlab-api-access-token
+      - gitlab-webhook-verification-token
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - 16686:16686
+
+  gitlab:
+    image: gitlab/gitlab-ce
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/gitlab/config:/etc/gitlab
+      - ./docker/gitlab/data:/var/opt/gitlab
+
+  ssh-key-volume-populator:
+    image: busybox
+    command: cp /data/* /volume/*
+    volumes:
+      - ./docker/receiver/ssh-key:/data
+      - ssh-key-volume:/volume
+
+secrets:
+  gitlab-api-access-token:
+    file: ./docker/receiver/personal-access-token.txt
+  gitlab-webhook-verification-token:
+    file: ./docker/receiver/gitlab-webhook-verification-token.txt
+
+volumes:
+  ssh-key-volume:
+    name: ssh-key-volume

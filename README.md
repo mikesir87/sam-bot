@@ -115,3 +115,10 @@ The validator **requires** the following environment variables to be set when st
  
  A sample Docker Stack file is provided as a base to work from ([docker-stack.yml](./docker-stack.yml)). It shouldn't be used directly, as you'll need to adjust where various properties are found (like secrets, volume mounts, etc.).
  
+ 
+ ## Test Setup
+ 
+ In order to help with testing, the local `docker-compose.yml` file spins up a GitLab instance. It contains a repo that is already configured with a webhook to notify SAM.
+ 
+ If you need to log in to the GitLab interface, use the credentials `root`:`admin1234`.
+ 
