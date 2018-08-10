@@ -17,6 +17,7 @@ services:
       SSH_KEY_VOLUME_SOURCE: ssh-key-volume
       SSH_KEY_VOLUME_DESTINATION: /ssh-key
       SSH_KEY_FILE_PATH: /ssh-key/id_rsa
+      VERIFY_NETWORK_NAME: sam-bot_default
     secrets:
       - gitlab-api-access-token
       - gitlab-webhook-verification-token
@@ -33,10 +34,14 @@ services:
     volumes:
       - ./docker/gitlab/config:/etc/gitlab
       - ./docker/gitlab/data:/var/opt/gitlab
+    networks:
+      default:
+        aliases:
+          - git.localhost
 
   ssh-key-volume-populator:
     image: busybox
-    command: cp /data/* /volume/*
+    command: sh -c "cp /data/* /volume && chmod 600 /volume/*"
     volumes:
       - ./docker/receiver/ssh-key:/data
       - ssh-key-volume:/volume
