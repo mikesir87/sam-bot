@@ -1,16 +1,23 @@
 import express from "express";
 import bodyParser from "body-parser";
 import {ErrorMessage} from "./errorMessage";
-import {processRequest} from "./processRequest";
+import {processRequest} from "./tracingOverrides";
+import {tracerMiddleware} from "./tracer";
 
 const app = express();
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => res.json({ message : "SAM says, 'Hi there!'" }));
 
-app.post("/", async (req, res) => {
+app.post("/", tracerMiddleware, async (req, res) => {
   try {
-    await processRequest(req.headers, req.body);
+    const requestContext = {
+      headers : req.headers,
+      body : req.body,
+      startTrace : req.startTrace,
+    };
+
+    await processRequest(requestContext);
     res.sendStatus(200);
   } catch (e) {
     res

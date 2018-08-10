@@ -1,41 +1,35 @@
-import {GitLabProcessor} from "./processors/gitlabProcessor";
 import {ErrorMessage} from "./errorMessage";
-import {verifyYaml} from "./verifyYaml";
+import {findProcessor, verifyYaml} from "./tracingOverrides";
 
-// As other processors are implemented, add them here
-const DEFAULT_PROCESSORS = [
-    new GitLabProcessor(),
-];
-
-export async function processRequest(headers,
-                                     request,
-                                     processors = DEFAULT_PROCESSORS,
+export async function processRequest(requestContext,
+                                     findProcessorFn = findProcessor,
                                      yamlVerificationFn = verifyYaml) {
-  const processor = processors.find((p) => p.supports(headers, request));
+
+  let processor = findProcessorFn(requestContext);
+
   if (processor === undefined)
     throw new ErrorMessage(500, "No processor found for incoming request");
 
   // Validate the request and get details (clone URLs, branches, etc.)
-  let details = null;
   try {
-    details = await processor.validate(headers, request);
+    requestContext.repoDetails = await processor.validate(requestContext);
   } catch (e) {
-    return processor.postComment(e.message, request);
+    return (e.requiresComment) ? processor.postComment(e.message, requestContext) : null;
   }
 
   // Start container for actual validation. If validation fails, its Promise is rejected (thrown).
   try {
-    await yamlVerificationFn(details.sourceRepoUrl, details.sourceBranch, details.sourceCommitId, details.targetRepoUrl, details.targetBranch);
+    await yamlVerificationFn(requestContext);
   } catch (e) {
-    return processor.postComment(e.message, request);
+    return processor.postComment(e.message, requestContext);
   }
 
   // Now merge!
   try {
-    await processor.mergeRequest(request);
-    await processor.postComment(`Auto-merged due to verification success`, request);
+    await processor.mergeRequest(requestContext);
+    await processor.postComment(`Auto-merged due to verification success`, requestContext);
   } catch (e) {
-    return processor.postComment(`Verification succeeded, but an error occurred during attempt to auto-merge: ${e.message}`, request);
+    return processor.postComment(`Verification succeeded, but an error occurred during attempt to auto-merge: ${e.message}`, requestContext);
   }
 
 }

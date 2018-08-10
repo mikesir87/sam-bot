@@ -1,16 +1,16 @@
-import Docker from "dockerode";
 import MemoryStream from "memorystream";
 import {VERIFY_IMAGE_NAME} from "./config";
+import {DockerClient} from "./dockerClient";
 
-const DockerClient = new Docker();
-
-export async function verifyYaml(sourceRepoUrl, sourceBranch, sourceCommitId,
-                           targetRepoUrl, targetBranch,
+export async function verifyYaml({ repoDetails },
+                           dockerClient = DockerClient,
                            sshKeyFilePath = process.env.SSH_KEY_FILE_PATH,
                            volumeSource = process.env.SSH_KEY_VOLUME_SOURCE,
                            volumeDestination = process.env.SSH_KEY_VOLUME_DESTINATION,
                            verifyImageName = VERIFY_IMAGE_NAME,
-                           dockerClient = DockerClient) {
+                           verifyNetworkName = process.env.VERIFY_NETWORK_NAME) {
+
+  const { sourceRepoUrl, sourceBranch, sourceCommitId, targetRepoUrl, targetBranch } = repoDetails;
 
   const memStreamStdIn = new MemoryStream(),
         memStreamStdErr = new MemoryStream();
@@ -29,23 +29,26 @@ export async function verifyYaml(sourceRepoUrl, sourceBranch, sourceCommitId,
 
   const createOptions = {
     Env: environment,
-    Volumes: { },
     HostConfig : {
       AutoRemove : true,
       Binds : [`${volumeSource}:${volumeDestination}`]
     }
   };
 
-  // Actually start up the container and let it run
-  return dockerClient.pull(verifyImageName)
-      .then(() => dockerClient.run(verifyImageName, null, [memStreamStdIn, memStreamStdErr], createOptions))
-      .then((container) => {
-        memStreamStdIn.destroy();
-        memStreamStdErr.destroy();
+  if (verifyNetworkName)
+    createOptions.HostConfig.NetworkMode = verifyNetworkName;
 
-        // If container exited with non-zero status, throw an error
-        if (container.output.StatusCode !== 0)
-          throw new Error(outputErr);
-      });
+  // Actually start up the container and let it run
+    return dockerClient.pull(verifyImageName)
+        .then(() => dockerClient.run(verifyImageName, null, [memStreamStdIn, memStreamStdErr], createOptions))
+        .then((container) => {
+          memStreamStdIn.destroy();
+          memStreamStdErr.destroy();
+
+          // If container exited with non-zero status, throw an error
+          if (container.output.StatusCode !== 0)
+            throw new Error(outputErr);
+        })
+        .catch((err) => console.log(err));
 }
 

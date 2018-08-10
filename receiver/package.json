@@ -18,6 +18,7 @@
     "body-parser": "^1.18.2",
     "dockerode": "^2.5.4",
     "express": "^4.16.3",
+    "jaeger-client": "^3.11.0",
     "memorystream": "^0.3.1",
     "node-fetch": "^2.1.2"
   },

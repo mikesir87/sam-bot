@@ -1,8 +1,9 @@
 import {processRequest} from "../src/processRequest";
+import {ValidationError} from "../src/validationError";
 
 describe("processRequest.js", () => {
 
-  let headers = {}, request = {}, supportingProcessor, otherProcessor, verifyFn;
+  let headers = {}, body = {}, requestContext = {}, processor, verifyFn;
   let validateDetails = {
     sourceRepoUrl : "SOURCE_REPO_URL",
     sourceBranch : "SOURCE_BRANCH",
@@ -12,68 +13,64 @@ describe("processRequest.js", () => {
   };
 
   beforeEach(() => {
-    otherProcessor = {
-      supports : jasmine.createSpy("otherProcessor.supports").and.returnValue(false)
-    };
-
-    supportingProcessor = {
-      supports : jasmine.createSpy("supportingProcessor.supports").and.returnValue(true),
+    processor = {
       validate : jasmine.createSpy("supportingProcessor.validate").and.returnValue(validateDetails),
       postComment : jasmine.createSpy("supportingProcessor.postComment").and.returnValue(Promise.resolve({ success : true })),
       mergeRequest : jasmine.createSpy("supportingProcessor.mergeRequest").and.returnValue(Promise.resolve({ success : true })),
     };
 
     verifyFn = jasmine.createSpy("yamlVerificationFn").and.returnValue(Promise.resolve({}));
+    requestContext = { headers, body };
   });
 
   it("throws an error message if no supported process found", async () => {
     try {
-      await processRequest(headers, request, [otherProcessor], verifyFn);
+      await processRequest({ headers, body }, () => undefined, verifyFn);
       fail("should have thrown");
     } catch (err) {
       expect(err.errorCode).toBe(500);
       expect(err.message).toEqual("No processor found for incoming request");
-      expect(otherProcessor.supports).toHaveBeenCalledWith(headers, request);
     }
   });
 
-  it("posts comment when processor's validation fails", async () => {
-    supportingProcessor.validate = jasmine.createSpy("failingValidate").and.throwError("Failure");
-    const response = await processRequest(headers, request, [supportingProcessor], verifyFn);
-    expect(response.success).toBe(true);
-    expect(supportingProcessor.supports).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.validate).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.postComment).toHaveBeenCalledWith("Failure", request);
+  it("posts comment when processor's validation error indicates comment should be created", async () => {
+    processor.validate = () => { throw new ValidationError("Failure", true) };
+    await processRequest(requestContext, () => processor);
+    expect(processor.postComment).toHaveBeenCalledWith("Failure", requestContext);
+  });
+
+  it("doesn't post comment when processor's validation error indicates comment should not be created", async () => {
+    processor.validate = jasmine.createSpy("failingValidate").and.callFake(() => { throw new ValidationError("Failure", false) });
+    await processRequest(requestContext, () => processor);
+    expect(processor.validate).toHaveBeenCalledWith(requestContext);
+    expect(processor.postComment).not.toHaveBeenCalled();
   });
 
   it("merges and posts a comment when everything succeeds", async () => {
     verifyFn = jasmine.createSpy("verifyFn").and.returnValue(Promise.resolve({}));
 
-    await processRequest(headers, request, [ supportingProcessor ], verifyFn);
-    expect(supportingProcessor.supports).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.validate).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.mergeRequest).toHaveBeenCalledWith(request);
-    expect(supportingProcessor.postComment).toHaveBeenCalledWith("Auto-merged due to verification success", request);
+    await processRequest(requestContext, () => processor, verifyFn);
+    expect(processor.validate).toHaveBeenCalledWith(requestContext);
+    expect(processor.mergeRequest).toHaveBeenCalledWith(requestContext);
+    expect(processor.postComment).toHaveBeenCalledWith("Auto-merged due to verification success", requestContext);
   });
 
   it("posts a comment when yaml verification fails", async () => {
     verifyFn = jasmine.createSpy("verifyFn").and.throwError("Error");
 
-    await processRequest(headers, request, [ supportingProcessor ], verifyFn);
-    expect(supportingProcessor.supports).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.validate).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.postComment).toHaveBeenCalledWith("Error", request);
-    expect(supportingProcessor.mergeRequest).not.toHaveBeenCalledWith(request);
+    await processRequest(requestContext, () => processor, verifyFn);
+    expect(processor.validate).toHaveBeenCalledWith(requestContext);
+    expect(processor.postComment).toHaveBeenCalledWith("Error", requestContext);
+    expect(processor.mergeRequest).not.toHaveBeenCalledWith(requestContext);
   });
 
   it("posts a comment when merging fails", async () => {
-    supportingProcessor.mergeRequest = jasmine.createSpy("failingMergeRequest").and.throwError("Merge failure");
+    processor.mergeRequest = jasmine.createSpy("failingMergeRequest").and.throwError("Merge failure");
 
-    await processRequest(headers, request, [ supportingProcessor ], verifyFn);
-    expect(supportingProcessor.supports).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.validate).toHaveBeenCalledWith(headers, request);
-    expect(supportingProcessor.mergeRequest).toHaveBeenCalledWith(request);
-    expect(supportingProcessor.postComment).toHaveBeenCalledWith("Verification succeeded, but an error occurred during attempt to auto-merge: Merge failure", request);
+    await processRequest(requestContext, () => processor, verifyFn);
+    expect(processor.validate).toHaveBeenCalledWith(requestContext);
+    expect(processor.mergeRequest).toHaveBeenCalledWith(requestContext);
+    expect(processor.postComment).toHaveBeenCalledWith("Verification succeeded, but an error occurred during attempt to auto-merge: Merge failure", requestContext);
   });
 
 });

@@ -12,6 +12,7 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "is-git-url": "1.0.0",
+    "jaeger-client": "^3.11.0",
     "jsondiffpatch": "^0.3.8",
     "yamljs": "^0.3.0"
   },
