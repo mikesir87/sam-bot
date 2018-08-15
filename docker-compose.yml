@@ -18,6 +18,7 @@ services:
       SSH_KEY_VOLUME_DESTINATION: /ssh-key
       SSH_KEY_FILE_PATH: /ssh-key/id_rsa
       VERIFY_NETWORK_NAME: sam-bot_default
+      JAEGER_AGENT_HOST: jaeger
     secrets:
       - gitlab-api-access-token
       - gitlab-webhook-verification-token
@@ -28,7 +29,7 @@ services:
       - 16686:16686
 
   gitlab:
-    image: gitlab/gitlab-ce
+    build: ./docker/gitlab
     ports:
       - 80:80
     volumes:
