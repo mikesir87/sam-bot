@@ -55,5 +55,5 @@ function startTraceIfPossible(traceName, requestContext, fn) {
         return fn(span, tracer);
       });
   }
-  return fn(requestContext);
+  return fn();
 }
