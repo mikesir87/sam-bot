@@ -55,3 +55,9 @@ async function runFn(span, fn) {
     }
   }
 }
+
+export async function closeTracer() {
+  if (tracer === null)
+    return Promise.resolve();
+  return new Promise((acc) => tracer.close(acc));
+}

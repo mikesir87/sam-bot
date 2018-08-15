@@ -3,7 +3,7 @@ import {getFileData} from "./getFileData";
 import {validateDifferences} from "./validateDifferences";
 import {yamlToJson} from "./yamlToJson";
 import {validateEnvironment} from "./validateEnvironment";
-import {getFirstSpan, initTracer, trace} from "./tracer";
+import {closeTracer, getFirstSpan, initTracer, trace} from "./tracer";
 
 // Call run to put us into an async function
 initTracer("verifier", process.env.TRACE_CONTEXT,
@@ -54,5 +54,7 @@ async function run() {
 
 function exitAsError(message) {
   console.error(message);
-  process.exit(1);
+  console.log(message);
+  return closeTracer()
+      .then(() => process.exit(1));
 }
