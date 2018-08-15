@@ -2,6 +2,7 @@ import { processRequest as _processRequest } from "./processRequest";
 import { findProcessor as _findProcessor } from "./processors/locator";
 import { verifyYaml as _verifyYaml } from "./verifyYaml";
 import {DockerClient} from "./dockerClient";
+import {JAEGER_AGENT_HOST} from "./config";
 
 export const processRequest = (rc) => {
   return startTraceIfPossible("processRequest", rc, () => _processRequest(rc));
@@ -31,15 +32,20 @@ export const verifyYaml = (rc) => {
 
     const overridenDockerClient = {
       pull : (imageName) => startTraceIfPossible("dockerClient.pull", rc, (span) => {
-        span.addTags({ imageName });
+        if (span) {
+          span.addTags({ imageName });
+        }
         return defaultDockerClient.pull(imageName);
       }),
       run: (imageName, cmd, streams, createOptions) => startTraceIfPossible("dockerClient.run", rc, (span, tracer) => {
-        let httpCarrier = {};
-        tracer.inject(span.context(), "text_map", httpCarrier);
-        createOptions.Env.push(`TRACE_CONTEXT=${JSON.stringify(httpCarrier)}`);
+        if (span) {
+          let httpCarrier = {};
+          tracer.inject(span.context(), "text_map", httpCarrier);
+          createOptions.Env.push(`TRACE_CONTEXT=${JSON.stringify(httpCarrier)}`);
+          createOptions.Env.push(`JAEGER_AGENT_HOST=${JAEGER_AGENT_HOST}`);
+          span.addTags({ imageName, env: createOptions.Env });
+        }
 
-        span.addTags({ imageName });
         return defaultDockerClient.run(imageName, cmd, streams, createOptions);
       })
     };

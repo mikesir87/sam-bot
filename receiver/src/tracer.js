@@ -1,4 +1,5 @@
 import * as jaeger from "jaeger-client";
+import {JAEGER_AGENT_HOST} from "./config";
 
 export const tracer = jaeger.initTracer({
   serviceName : "sambot",
@@ -8,7 +9,7 @@ export const tracer = jaeger.initTracer({
   },
   reporter : {
     logSpans : true,
-    agentHost : "jaeger",
+    agentHost : JAEGER_AGENT_HOST,
   },
 });
 

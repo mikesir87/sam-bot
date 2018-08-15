@@ -1,6 +1,7 @@
 import * as jaeger from "jaeger-client";
+import {JAEGER_AGENT_HOST, TRACING_ENABLED} from "./config";
 
-const tracer = jaeger.initTracer({
+const tracer = (TRACING_ENABLED) ? jaeger.initTracer({
   serviceName : "sambot-verifier",
   sampler : {
     type : "const",
@@ -8,13 +9,16 @@ const tracer = jaeger.initTracer({
   },
   reporter : {
     logSpans : true,
-    agentHost : "jaeger",
+    agentHost : JAEGER_AGENT_HOST,
   },
-});
+}) : null;
 
 const spans = [];
 
 export const initTracer = async (name, traceInfo, fn, completionFn) => {
+  if (!TRACING_ENABLED)
+    return runFn(null, fn).then(completionFn);
+
   const spanContext = tracer.extract("text_map", JSON.parse(traceInfo));
   const span = tracer.startSpan(name, {
     childOf: spanContext
@@ -28,6 +32,9 @@ export const initTracer = async (name, traceInfo, fn, completionFn) => {
 };
 
 export const trace = (name, fn) => {
+  if (!TRACING_ENABLED)
+    return runFn(null, fn);
+
   let span = tracer.startSpan(name, {
     childOf: spans[spans.length - 1].context(),
   });
@@ -35,6 +42,9 @@ export const trace = (name, fn) => {
 };
 
 async function runFn(span, fn) {
+  if (!span)
+    return fn();
+
   spans.push(span);
 
   let result;
