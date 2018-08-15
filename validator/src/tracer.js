@@ -59,5 +59,6 @@ async function runFn(span, fn) {
 export async function closeTracer() {
   if (tracer === null)
     return Promise.resolve();
+  spans.forEach(span => span.finish());
   return new Promise((acc) => tracer.close(acc));
 }
