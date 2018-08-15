@@ -53,7 +53,7 @@ export async function validateDifferences(sourceJson, targetJson, regexPatterns 
     console.log(JSON.stringify(diff, null, 2));
 
     if (invalidKeys.length > 0) {
-      reject(`Invalid keys detected: \`${invalidKeys.join("`, `")}\``);
+      reject(`Unable to authorize changes to keys: \`${invalidKeys.join("`, `")}\``);
       return;
     }
 

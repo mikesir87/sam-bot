@@ -21,7 +21,7 @@ export async function processRequest(requestContext,
   try {
     await yamlVerificationFn(requestContext);
   } catch (e) {
-    return processor.postComment(e.message, requestContext);
+    return processor.postComment(`Change unable to be auto-merged. ${e.message}`, requestContext);
   }
 
   // Now merge!
