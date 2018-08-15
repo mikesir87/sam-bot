@@ -46,8 +46,14 @@ export async function verifyYaml({ repoDetails },
           memStreamStdErr.destroy();
 
           // If container exited with non-zero status, throw an error
-          if (container.output.StatusCode !== 0)
-            throw new Error(outputErr);
+          if (container.output.StatusCode !== 0) {
+            // For some reason, the error stream hasn't been loading, so we take the last line of
+            // output as the error message for now
+            const message = output.split(/[\r]?\n/)
+                .filter((line) => line.length > 0)
+                .pop();
+            throw new Error(message);
+          }
         });
 }
 
