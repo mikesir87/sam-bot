@@ -48,7 +48,6 @@ export async function verifyYaml({ repoDetails },
           // If container exited with non-zero status, throw an error
           if (container.output.StatusCode !== 0)
             throw new Error(outputErr);
-        })
-        .catch((err) => console.log(err));
+        });
 }
 
